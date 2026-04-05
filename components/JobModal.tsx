@@ -25,6 +25,7 @@ export function JobModal({ isOpen, onClose, onSave, title }: JobModalProps) {
     guardsNeeded: 1,
     hasQRF: false,
     hasHydration: false,
+    isPatrimonial: false,
     location: '',
     mapLink: '',
     description: '',
@@ -50,6 +51,7 @@ export function JobModal({ isOpen, onClose, onSave, title }: JobModalProps) {
         dailyRate: formData.dailyRate || 0,
         hasQRF: formData.hasQRF,
         hasHydration: formData.hasHydration,
+        isPatrimonial: formData.isPatrimonial,
         qrExpiresAt: expiresAt.toISOString(),
       });
 
@@ -65,6 +67,7 @@ export function JobModal({ isOpen, onClose, onSave, title }: JobModalProps) {
         guardsNeeded: 1,
         hasQRF: false,
         hasHydration: false,
+        isPatrimonial: false,
         location: '',
         mapLink: '',
         description: '',
@@ -208,7 +211,7 @@ export function JobModal({ isOpen, onClose, onSave, title }: JobModalProps) {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
                 <input 
                   type="checkbox"
@@ -218,7 +221,7 @@ export function JobModal({ isOpen, onClose, onSave, title }: JobModalProps) {
                 />
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="size-4 text-orange-500" />
-                  <span className="text-sm font-bold text-slate-700">Com QRF</span>
+                  <span className="text-[11px] font-bold text-slate-700">Com QRF</span>
                 </div>
               </label>
               <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
@@ -230,7 +233,18 @@ export function JobModal({ isOpen, onClose, onSave, title }: JobModalProps) {
                 />
                 <div className="flex items-center gap-2">
                   <Droplets className="size-4 text-blue-500" />
-                  <span className="text-sm font-bold text-slate-700">Hidratação</span>
+                  <span className="text-[11px] font-bold text-slate-700">Hidratação</span>
+                </div>
+              </label>
+              <label className="flex items-center gap-3 p-3 rounded-xl border border-amber-200 border-dashed bg-amber-50/50 cursor-pointer hover:bg-amber-50 transition-colors">
+                <input 
+                  type="checkbox"
+                  className="size-4 rounded text-amber-600 focus:ring-amber-600"
+                  checked={formData.isPatrimonial}
+                  onChange={e => setFormData({...formData, isPatrimonial: e.target.checked})}
+                />
+                <div className="flex items-center gap-1">
+                  <span className="text-[11px] font-bold text-amber-700">Escala Patrimonial (Ponto Celular)</span>
                 </div>
               </label>
             </div>

@@ -68,6 +68,7 @@ export interface Job {
   guardsConfirmed: number;
   hasQRF: boolean;
   hasHydration: boolean;
+  isPatrimonial?: boolean;
   status: JobStatus;
   qrCheckinToken?: string;
   qrCheckoutToken?: string;
