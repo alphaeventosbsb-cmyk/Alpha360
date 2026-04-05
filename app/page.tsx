@@ -216,7 +216,7 @@ export default function LoginPage() {
                     onChange={e => setFormData({...formData, acceptTerms: e.target.checked})}
                   />
                   <label htmlFor="terms" className="text-xs text-slate-500 leading-tight">
-                    Eu li e aceito os <Link href="/termos-de-uso" target="_blank" className="font-bold text-[#192c4d] hover:underline">Termos de Uso</Link> e a <Link href="/privacidade" target="_blank" className="font-bold text-[#192c4d] hover:underline">Política de Privacidade</Link>.
+                    Eu li e aceito os <Link href="/termos-de-uso" target="_blank" className="font-bold text-[#192c4d] hover:underline">Termos de Uso</Link>, a <Link href="/privacidade" target="_blank" className="font-bold text-[#192c4d] hover:underline">Política de Privacidade</Link> e o <Link href="/nda" target="_blank" className="font-bold text-[#192c4d] hover:underline">NDA (Confidencialidade)</Link>.
                   </label>
                 </div>
               )}
@@ -284,9 +284,10 @@ export default function LoginPage() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col items-center">
-              <div className="flex items-center gap-4 text-xs font-bold text-slate-400 mb-3">
+              <div className="flex flex-wrap justify-center items-center gap-4 text-xs font-bold text-slate-400 mb-3">
                 <Link href="/termos-de-uso" className="hover:text-[#192c4d] transition-colors">Termos de Uso</Link>
-                <Link href="/privacidade" className="hover:text-[#192c4d] transition-colors">Política de Privacidade</Link>
+                <Link href="/privacidade" className="hover:text-[#192c4d] transition-colors">Privacidade</Link>
+                <Link href="/nda" className="hover:text-[#192c4d] transition-colors">NDA</Link>
                 <Link href="/licenca-ou-direitos" className="hover:text-[#192c4d] transition-colors">Licenciamento</Link>
               </div>
               <p className="text-xs text-slate-400 text-center">
