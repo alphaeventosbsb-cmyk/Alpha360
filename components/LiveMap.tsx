@@ -48,14 +48,22 @@ interface LiveMapProps {
   alerts: any[];
   sites?: any[];
   sosActive?: boolean;
+  selectedLocation?: [number, number] | null;
 }
 
-export default function LiveMap({ events, guards, alerts, sites = [], sosActive = false }: LiveMapProps) {
+export default function LiveMap({ events, guards, alerts, sites = [], sosActive = false, selectedLocation = null }: LiveMapProps) {
   const [center, setCenter] = useState<[number, number] | null>(null);
   
   // Default center: Brasília
   const defaultCenter: [number, number] = [-15.7975, -47.8919];
   const defaultZoom = 11;
+
+  // Auto-center when an item is selected from the list
+  useEffect(() => {
+    if (selectedLocation) {
+      setCenter(selectedLocation);
+    }
+  }, [selectedLocation]);
 
   // Auto-center on SOS when it arrives
   useEffect(() => {

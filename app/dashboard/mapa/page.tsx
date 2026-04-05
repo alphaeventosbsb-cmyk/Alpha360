@@ -24,6 +24,8 @@ export default function MapaPage() {
   const [sites, setSites] = useState<any[]>([]);
   const [filter, setFilter] = useState<'all' | 'guards' | 'events' | 'alerts' | 'sites'>('all');
 
+  const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
+
   useEffect(() => {
     if (!user) return;
 
@@ -94,6 +96,68 @@ export default function MapaPage() {
   const activeGuards = guards.filter(g => g.status === 'Ativo' || g.status === 'On Duty');
   const sosActive = alerts.some(a => a.type === 'sos' && a.status === 'active');
 
+  const renderSidebarList = () => {
+    if (filter === 'all') return null;
+
+    let items: any[] = [];
+    let title = '';
+    
+    if (filter === 'guards') {
+      items = activeGuards;
+      title = 'Guardas Ativos';
+    } else if (filter === 'events') {
+      items = events.filter(e => e.status === 'in_progress' || e.status === 'filled');
+      title = 'Escalas Confirmadas/Ativas';
+    } else if (filter === 'sites') {
+      items = sites;
+      title = 'Postos Registrados';
+    } else if (filter === 'alerts') {
+      items = alerts;
+      title = 'Alertas Ativos';
+    }
+
+    return (
+      <div className="w-full lg:w-80 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-[550px] shrink-0">
+        <div className="p-4 border-b border-slate-200 bg-slate-50">
+          <h3 className="font-bold text-slate-900">{title}</h3>
+          <p className="text-xs text-slate-500">{items.length} itens encontrados na varredura.</p>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {items.length === 0 && (
+            <p className="text-sm text-center text-slate-400 mt-4">Nenhum registro ativo.</p>
+          )}
+          {items.map((item, i) => {
+            const hasLocation = item.lat && item.lng;
+            return (
+              <button 
+                key={i} 
+                onClick={() => {
+                  if (hasLocation) setSelectedLocation([item.lat, item.lng])
+                }}
+                className={`w-full text-left p-3 rounded-xl border transition-all ${
+                  hasLocation ? 'border-slate-200 bg-white hover:border-[#192c4d] hover:shadow-sm cursor-pointer' : 'border-dashed border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <div className="font-bold text-sm text-slate-900">
+                  {item.name || item.clientName || 'Alerta Ocorrido'}
+                </div>
+                <div className="text-xs text-slate-500 mt-0.5 truncate">
+                  {item.rank || item.location || item.address || item.message || 'Sem Localização Detalhada'}
+                </div>
+                {filter === 'guards' && (
+                  <div className="text-[10px] text-green-600 font-bold mt-1.5">• {item.status}</div>
+                )}
+                {filter === 'alerts' && (
+                  <div className="text-[10px] text-red-600 font-bold mt-1.5">⚠️ {item.type.toUpperCase()}</div>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -120,7 +184,10 @@ export default function MapaPage() {
 
       {/* Stats Bar */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3">
+        <div 
+          onClick={() => setFilter(filter === 'guards' ? 'all' : 'guards')}
+          className={`bg-white p-4 rounded-xl border flex items-center gap-3 cursor-pointer transition-colors ${filter === 'guards' ? 'border-[#192c4d] ring-1 ring-[#192c4d]' : 'border-slate-200 hover:border-slate-300'}`}
+        >
           <div className="p-2 bg-green-50 rounded-lg">
             <Users className="size-5 text-green-600" />
           </div>
@@ -129,16 +196,22 @@ export default function MapaPage() {
             <p className="text-xs text-slate-500">Guardas Ativos</p>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3">
+        <div 
+          onClick={() => setFilter(filter === 'events' ? 'all' : 'events')}
+          className={`bg-white p-4 rounded-xl border flex items-center gap-3 cursor-pointer transition-colors ${filter === 'events' ? 'border-[#192c4d] ring-1 ring-[#192c4d]' : 'border-slate-200 hover:border-slate-300'}`}
+        >
           <div className="p-2 bg-blue-50 rounded-lg">
             <MapPin className="size-5 text-blue-600" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-slate-900">{events.length}</p>
+            <p className="text-2xl font-bold text-slate-900">{events.filter(e => e.status === 'in_progress' || e.status === 'filled').length}</p>
             <p className="text-xs text-slate-500">Escalas Ativas</p>
           </div>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3">
+        <div 
+          onClick={() => setFilter(filter === 'sites' ? 'all' : 'sites')}
+          className={`bg-white p-4 rounded-xl border flex items-center gap-3 cursor-pointer transition-colors ${filter === 'sites' ? 'border-[#192c4d] ring-1 ring-[#192c4d]' : 'border-slate-200 hover:border-slate-300'}`}
+        >
           <div className="p-2 bg-orange-50 rounded-lg">
             <Building2 className="size-5 text-orange-600" />
           </div>
@@ -147,9 +220,13 @@ export default function MapaPage() {
             <p className="text-xs text-slate-500">Postos</p>
           </div>
         </div>
-        <div className={`p-4 rounded-xl border flex items-center gap-3 ${
-          sosActive ? 'bg-red-50 border-red-200 animate-pulse' : 'bg-white border-slate-200'
-        }`}>
+        <div 
+          onClick={() => setFilter(filter === 'alerts' ? 'all' : 'alerts')}
+          className={`p-4 rounded-xl border flex items-center gap-3 cursor-pointer transition-colors ${
+            filter === 'alerts' ? 'border-[#192c4d] ring-1 ring-[#192c4d]' : 
+            sosActive ? 'bg-red-50 border-red-200 animate-pulse' : 'bg-white border-slate-200 hover:border-slate-300'
+          }`}
+        >
           <div className={`p-2 rounded-lg ${sosActive ? 'bg-red-100' : 'bg-red-50'}`}>
             <AlertTriangle className={`size-5 ${sosActive ? 'text-red-600' : 'text-red-600'}`} />
           </div>
@@ -162,15 +239,16 @@ export default function MapaPage() {
         </div>
       </div>
 
-      {/* Map */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="h-[550px] relative">
+      {/* Map and Active List Array */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden relative h-[550px]">
           <LiveMap
             events={filteredEvents}
             guards={filteredGuards}
             alerts={filteredAlerts}
             sites={filteredSites}
             sosActive={sosActive}
+            selectedLocation={selectedLocation}
           />
 
           {/* Legend */}
@@ -187,6 +265,9 @@ export default function MapaPage() {
             </div>
           </div>
         </div>
+        
+        {/* Active List Sidebar */}
+        {renderSidebarList()}
       </div>
     </div>
   );
