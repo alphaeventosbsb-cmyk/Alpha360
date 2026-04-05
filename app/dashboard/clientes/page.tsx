@@ -60,21 +60,7 @@ export default function ClientesPage() {
     return () => unsubscribe();
   }, [user]);
 
-  const handleSave = async (formData: any) => {
-    if (!user) return;
-    try {
-      await addDoc(collection(db, 'jobs'), {
-        ...formData,
-        companyId: userData?.companyId || '',
-        contractorId: user.uid,
-        status: 'open',
-        createdAt: serverTimestamp()
-      });
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Error adding job:", error);
-    }
-  };
+
 
   const handleToggleStatus = async (job: any) => {
     try {
@@ -251,7 +237,6 @@ export default function ClientesPage() {
       <JobModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
         title={t('clients.modalTitle') || "Publicar Nova Vaga de Segurança"}
       />
 
