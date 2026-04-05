@@ -7,7 +7,7 @@ import { UserCircle, LogOut, ChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -28,6 +28,12 @@ export default function ProfileScreen() {
           <Text style={styles.roleText}>TÁTICO / PATRULHA</Text>
         </View>
       </View>
+
+      {userData && !userData.registrationComplete && (
+        <TouchableOpacity style={styles.alertButton} onPress={() => router.push('/register')}>
+          <Text style={styles.alertButtonText}>⚠️ Completar Dossiê Tático</Text>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.menu}>
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/escala')}>
@@ -126,5 +132,20 @@ const styles = StyleSheet.create({
     color: '#ef4444',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  alertButton: {
+    marginHorizontal: 24,
+    marginTop: 20,
+    backgroundColor: '#fef2f2',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#fca5a5',
+  },
+  alertButtonText: {
+    color: '#dc2626',
+    fontWeight: 'bold',
+    fontSize: 16,
   }
 });

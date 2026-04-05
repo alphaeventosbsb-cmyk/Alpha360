@@ -3,10 +3,12 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity, 
 import { collection, query, where, onSnapshot, orderBy, doc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../hooks/use-auth';
-import { Briefcase, Calendar, MapPin, DollarSign, Clock, Users, ShieldAlert, CheckCircle2 } from 'lucide-react-native';
+import { Briefcase, Calendar, MapPin, DollarSign, Clock, Users, ShieldAlert, CheckCircle2, AlertCircle } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 export default function VagasScreen() {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
+  const router = useRouter();
   const [jobs, setJobs] = useState<any[]>([]);
   const [myRequests, setMyRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

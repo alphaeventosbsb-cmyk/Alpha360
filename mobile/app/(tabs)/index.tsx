@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { MapPin, CheckCircle, LogOut, QrCode } from 'lucide-react-native';
 import * as Location from 'expo-location';
-import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../hooks/use-auth';
 import { useRouter } from 'expo-router';
+import { AlertCircle } from 'lucide-react-native';
 
 export default function PontoScreen() {
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -18,23 +19,21 @@ export default function PontoScreen() {
   const [activeAssignment, setActiveAssignment] = useState<any>(null); // 'approved' or 'checked_in'
   const [jobData, setJobData] = useState<any>(null);
 
-  const fetchCurrentAssignment = async () => {
+  useEffect(() => {
     if (!user) return;
-    try {
-      // Find the active assignment (approved or checked_in)
-      const q = query(
-        collection(db, 'job_assignments'),
-        where('guardId', '==', user.uid),
-        where('status', 'in', ['approved', 'checked_in'])
-      );
-      const snapshot = await getDocs(q);
-      
+    
+    // Listen to assignment changes in real-time
+    const q = query(
+      collection(db, 'job_assignments'),
+      where('guardId', '==', user.uid),
+      where('status', 'in', ['approved', 'checked_in'])
+    );
+    
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
       if (!snapshot.empty) {
-        // Just take the first valid one if there are multiple
         const assignDoc = snapshot.docs[0];
         const assignData = { id: assignDoc.id, ...assignDoc.data() } as any;
         
-        // Fetch the corresponding job to check if it's patrimonial
         const jDoc = await getDoc(doc(db, 'jobs', assignData.jobId));
         if (jDoc.exists()) {
           setActiveAssignment(assignData);
@@ -51,23 +50,57 @@ export default function PontoScreen() {
         setJobData(null);
         setStatusText('Você não está em serviço.');
       }
-    } catch (error) {
+      setLoading(false);
+    }, (error) => {
       console.error(error);
       setStatusText('Erro ao buscar escalas.');
-    } finally {
       setLoading(false);
-    }
-  };
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Aviso', 'A localização é recomendada para validar o seu ponto.');
+        Alert.alert('Aviso', 'A localização é obrigatória e deve ficar ativa todo o tempo em serviço.');
       }
     })();
-    fetchCurrentAssignment();
   }, [user]);
+
+  // LIVE GPS TRACKER
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    if (activeAssignment?.status === 'checked_in' && user) {
+      interval = setInterval(async () => {
+        try {
+          let location = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          });
+          const lat = location.coords.latitude;
+          const lng = location.coords.longitude;
+          const now = new Date().toISOString();
+
+          // Atualiza o documento do user para refletir no LiveMap do Dashboard
+          await updateDoc(doc(db, 'users', user.uid), {
+            lat,
+            lng,
+            lastLocationUpdate: now,
+            status: 'Ativo'
+          });
+          console.log("GPS Tracker: Posição gravada no banco.");
+        } catch (e) {
+          console.log("GPS Tracker falhou", e);
+        }
+      }, 30000); // A cada 30 segundos enquanto estiver checked_in
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [activeAssignment, user]);
 
   const handleAction = async (action: 'in' | 'out') => {
     if (!activeAssignment || !jobData) return;
@@ -136,7 +169,6 @@ export default function PontoScreen() {
         Alert.alert('Sucesso', `Turno encerrado! Horas lançadas.`);
       }
       
-      await fetchCurrentAssignment();
     } catch (error) {
       Alert.alert('Erro', 'Ocorreu um erro ao registrar o ponto.');
     } finally {
@@ -147,6 +179,24 @@ export default function PontoScreen() {
   const isWorking = activeAssignment?.status === 'checked_in';
   const hasApprovedJob = activeAssignment?.status === 'approved';
   const isPatrimonial = jobData?.isPatrimonial === true;
+
+  if (userData && !userData.registrationComplete) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <AlertCircle size={64} color="#ef4444" style={{ marginBottom: 20 }} />
+          <Text style={[styles.timeText, { fontSize: 24, textAlign: 'center' }]}>Cadastro Incompleto</Text>
+          <Text style={[styles.helperText, { marginTop: 10 }]}>Para receber escalas e liberar o aplicativo, você precisa criar o seu Dossiê Operacional com selfie na aba Perfil ou contatar o Rh.</Text>
+          <TouchableOpacity 
+            style={[styles.bigButton, styles.buttonQR, { height: 60, marginTop: 30 }]} 
+            onPress={() => router.push('/profile')}
+          >
+            <Text style={styles.buttonText}>Acessar Perfil</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

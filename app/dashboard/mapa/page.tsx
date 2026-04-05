@@ -37,7 +37,11 @@ export default function MapaPage() {
     );
     const unsubGuards = onSnapshot(guardsQuery, (snapshot) => {
       const data = snapshot.docs
-        .filter(d => d.data().lat && d.data().lng)
+        .filter(d => 
+           d.data().lat !== undefined && 
+           d.data().lng !== undefined && 
+           (d.data().status === 'Ativo' || d.data().status === 'On Duty' || d.data().status === 'in_progress')
+        )
         .map(d => ({ id: d.id, ...d.data() }));
       setGuards(data);
     });
@@ -127,7 +131,7 @@ export default function MapaPage() {
             <p className="text-sm text-center text-slate-400 mt-4">Nenhum registro ativo.</p>
           )}
           {items.map((item, i) => {
-            const hasLocation = item.lat && item.lng;
+            const hasLocation = item.lat !== undefined && item.lng !== undefined;
             return (
               <button 
                 key={i} 

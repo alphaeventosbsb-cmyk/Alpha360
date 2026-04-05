@@ -61,10 +61,11 @@ export default function QrScreen() {
       const assignData = { id: assignDoc.id, ...assignDoc.data() } as any;
 
       // Puxar localização (ignorando erros se GPS estiver ruim)
-      let lat = 0, lng = 0;
+      let lat: number | undefined;
+      let lng: number | undefined;
       try {
          const loc = await Location.getCurrentPositionAsync({
-           accuracy: Location.Accuracy.Highest,
+           accuracy: Location.Accuracy.Balanced, // Alterado para balanceado para funcionar melhor em ambientes fechados (emuladores)
          });
          lat = loc.coords.latitude;
          lng = loc.coords.longitude;
@@ -78,10 +79,16 @@ export default function QrScreen() {
          if (assignData.status === 'checked_in') throw new Error('Você já bateu o ponto de ENTRADA para esta escala.');
 
          await updateDoc(doc(db, 'job_assignments', assignData.id), {
-           status: 'checked_in', checkinAt: now, checkinLat: lat, checkinLng: lng,
+           status: 'checked_in', checkinAt: now, checkinLat: lat ?? 0, checkinLng: lng ?? 0,
          });
          await updateDoc(doc(db, 'jobs', job.id), { status: 'in_progress' });
-         await updateDoc(doc(db, 'users', user.uid), { status: 'Ativo', lat, lng, lastLocationUpdate: now });
+         
+         const userUpdate: any = { status: 'Ativo', lastLocationUpdate: now, companyId: job.companyId };
+         if (lat !== undefined && lng !== undefined) {
+             userUpdate.lat = lat;
+             userUpdate.lng = lng;
+         }
+         await updateDoc(doc(db, 'users', user.uid), userUpdate);
 
          Alert.alert('Sucesso!', 'Entrada registrada com sucesso.', [{ text: 'OK', onPress: () => setScanned(false) }]);
 
@@ -94,7 +101,7 @@ export default function QrScreen() {
          const totalHours = Math.round((checkoutTime.getTime() - checkinTime.getTime()) / (1000 * 60 * 60) * 100) / 100;
 
          await updateDoc(doc(db, 'job_assignments', assignData.id), {
-           status: 'checked_out', checkoutAt: now, checkoutLat: lat, checkoutLng: lng,
+           status: 'checked_out', checkoutAt: now, checkoutLat: lat ?? 0, checkoutLng: lng ?? 0,
            totalHours: totalHours > 0 ? totalHours : 0.1, paymentStatus: 'pending',
          });
          await updateDoc(doc(db, 'users', user.uid), { status: 'Inativo' });

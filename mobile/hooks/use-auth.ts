@@ -6,6 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<string | null>(null);
+  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,13 +16,16 @@ export function useAuth() {
         try {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
-            setRole(userDoc.data()?.role || 'guard');
+            const data = userDoc.data();
+            setRole(data?.role || 'guard');
+            setUserData({ id: userDoc.id, ...data });
           }
         } catch (error) {
           console.error("Error fetching user role:", error);
         }
       } else {
         setRole(null);
+        setUserData(null);
       }
       setLoading(false);
     });
@@ -29,5 +33,5 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
-  return { user, role, loading };
+  return { user, role, userData, loading };
 }

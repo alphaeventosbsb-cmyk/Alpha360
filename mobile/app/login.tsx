@@ -3,47 +3,27 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { useRouter } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import { Shield } from 'lucide-react-native';
 
 export default function LoginScreen() {
-  const [isLogin, setIsLogin] = useState(true);
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleAuth = async () => {
-    if (!email || !password || (!isLogin && !name)) {
-      Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
+    if (!email || !password) {
+      Alert.alert('Erro', 'Preencha seu E-mail e Senha.');
       return;
     }
     
     setLoading(true);
     try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email.trim(), password);
-        router.replace('/(tabs)');
-      } else {
-        const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
-        // Cria o perfil do vigilante no banco de dados da corporação
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
-          name: name.trim(),
-          email: email.trim(),
-          role: 'guard',
-          createdAt: new Date().toISOString()
-        });
-        
-        Alert.alert('Sucesso!', 'Conta de vigilante criada com sucesso.');
-        router.replace('/(tabs)');
-      }
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      router.replace('/(tabs)');
     } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
-        Alert.alert('Atenção', 'Este email já está cadastrado.');
-      } else {
-        Alert.alert('Erro de Autenticação', 'Credenciais inválidas ou erro no sistema.');
-      }
+      Alert.alert('Erro de Autenticação', 'Credenciais inválidas ou erro no sistema.');
     } finally {
       setLoading(false);
     }
@@ -65,19 +45,6 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.form}>
-          
-          {!isLogin && (
-            <>
-              <Text style={styles.label}>Nome Completo</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Seu nome"
-                placeholderTextColor="#9ca3af"
-                value={name}
-                onChangeText={setName}
-              />
-            </>
-          )}
 
           <Text style={styles.label}>Email Operacional</Text>
           <TextInput
@@ -108,14 +75,12 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.buttonText}>{isLogin ? 'Entrar em Operação' : 'Criar Conta de Vigilante'}</Text>
+              <Text style={styles.buttonText}>Entrar em Operação</Text>
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setIsLogin(!isLogin)} style={styles.switchButton}>
-            <Text style={styles.switchText}>
-              {isLogin ? 'Primeiro acesso? Crie seu perfil aqui.' : 'Já tem uma conta? Faça o Login.'}
-            </Text>
+          <TouchableOpacity style={styles.registerButton} onPress={() => router.push('/register')} disabled={loading}>
+            <Text style={styles.registerButtonText}>Ainda não tem conta? Cadastrar-se</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -198,8 +163,19 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  registerButton: {
+    marginTop: 20,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  registerButtonText: {
+    color: '#3b82f6',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
   switchButton: {
     marginTop: 24,

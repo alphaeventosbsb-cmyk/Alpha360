@@ -119,8 +119,8 @@ export default function DashboardPage() {
     unsubs.push(onSnapshot(guardsQ, (snap) => {
       const guards = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       setTotalGuards(guards.length);
-      setGuardsOnDuty(guards.filter((g: any) => g.status === 'Ativo' || g.status === 'On Duty').length);
-      setMapGuards(guards.filter((g: any) => g.lat && g.lng));
+      setGuardsOnDuty(guards.filter((g: any) => g.status === 'Ativo' || g.status === 'On Duty' || g.status === 'in_progress').length);
+      setMapGuards(guards.filter((g: any) => g.lat !== undefined && g.lng !== undefined && g.status === 'Ativo'));
     }));
 
     // ---- Jobs (filtered by companyId) ----
