@@ -27,7 +27,7 @@ export default function LoginPage() {
     name: '',
     email: '',
     password: '',
-    role: 'guard', // default role for new signups
+    role: 'client', // default role for admins/clients
     acceptTerms: false
   });
 
@@ -142,22 +142,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <>
-                  <div className="grid grid-cols-2 gap-2 mb-4">
-                    <button
-                      type="button"
-                      onClick={() => setFormData({...formData, role: 'guard'})}
-                      className={`py-2 text-xs font-bold rounded-lg border transition-all ${formData.role === 'guard' ? 'bg-[#192c4d] text-white border-[#192c4d]' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}`}
-                    >
-                      Sou Vigilante
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({...formData, role: 'client'})}
-                      className={`py-2 text-xs font-bold rounded-lg border transition-all ${formData.role === 'client' ? 'bg-[#192c4d] text-white border-[#192c4d]' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'}`}
-                    >
-                      Sou Contratante
-                    </button>
-                  </div>
+                  {/* Removed role selector as this SaaS is now exclusive for Clients/Admins */}
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-500 uppercase">Nome</label>
                     <div className="relative">

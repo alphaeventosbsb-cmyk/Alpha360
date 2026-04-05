@@ -22,10 +22,14 @@ export default function AprovacaoPage() {
   useEffect(() => {
     if (!user) return;
 
+    const qConstraints: any[] = [where('status', '==', 'pending')];
+    if (userData?.companyId) {
+      qConstraints.push(where('companyId', '==', userData.companyId));
+    }
+
     const q = query(
       collection(db, 'job_assignments'),
-      where('companyId', '==', userData?.companyId || ''),
-      where('status', '==', 'pending')
+      ...qConstraints
     );
 
     const unsub = onSnapshot(q, async (snapshot) => {
