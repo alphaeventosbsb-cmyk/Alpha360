@@ -1,0 +1,137 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          request.auth.token.email == "alphaeventos.bsb@gmail.com");
+    }
+
+    function getUserCompanyId() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId;
+    }
+
+    function belongsToSameCompany(companyId) {
+      return isAuthenticated() && getUserCompanyId() == companyId;
+    }
+
+    // ===============================================================
+    // Users
+    // ===============================================================
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Companies
+    // ===============================================================
+    match /companies/{companyId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Jobs (Escalas)
+    // ===============================================================
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow create: if isAuthenticated() && belongsToSameCompany(request.resource.data.companyId);
+      allow update: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow delete: if isAdmin() || (isAuthenticated() && belongsToSameCompany(resource.data.companyId));
+    }
+
+    // ===============================================================
+    // Job Assignments
+    // ===============================================================
+    match /job_assignments/{assignmentId} {
+      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow create: if isAuthenticated() && belongsToSameCompany(request.resource.data.companyId);
+      allow update: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Alerts
+    // ===============================================================
+    match /alerts/{alertId} {
+      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow create: if isAuthenticated() && belongsToSameCompany(request.resource.data.companyId);
+      allow update: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow delete: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+    }
+
+    // ===============================================================
+    // Messages (Chat)
+    // ===============================================================
+    match /messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if false; // Messages are immutable
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Sites (Postos)
+    // ===============================================================
+    match /sites/{siteId} {
+      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow create: if isAuthenticated() && belongsToSameCompany(request.resource.data.companyId);
+      allow update: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow delete: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+    }
+
+    // ===============================================================
+    // Locations (GPS Tracking)
+    // ===============================================================
+    match /locations/{locationId} {
+      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow create: if isAuthenticated() && belongsToSameCompany(request.resource.data.companyId);
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // Ratings
+    // ===============================================================
+    match /ratings/{ratingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ===============================================================
+    // PIX Payments
+    // ===============================================================
+    match /pix_payments/{paymentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Legacy collections (backwards compatibility)
+    // ===============================================================
+    match /guards/{document=**} {
+      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow write: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+    }
+  }
+}

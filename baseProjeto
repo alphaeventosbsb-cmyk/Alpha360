@@ -1,0 +1,444 @@
+# 🛡️ AlphaGuard SaaS
+
+### Sistema Profissional de Gestão de Escalas de Segurança em Tempo Real
+
+---
+
+## 🚀 Visão Geral
+
+O **AlphaGuard SaaS** é uma plataforma completa para gestão de operações de segurança privada, permitindo que empresas (contratantes) controlem suas equipes em tempo real, com rastreamento, comunicação e automação operacional.
+
+O sistema evolui de um painel administrativo existente para um **SaaS multiempresa escalável**, com duas interfaces principais:
+
+* 🧑‍💼 Contratante (Dashboard Web)
+* 🛡️ Segurança (App Web/Mobile)
+
+---
+
+## 🎯 Objetivo do Sistema
+
+Criar um sistema que permita:
+
+* Gestão completa de escalas
+* Controle em tempo real de equipes
+* Comunicação direta
+* Monitoramento com mapa
+* Automação de check-in / check-out via QR Code
+* Controle financeiro por operação
+
+---
+
+## 🧠 Base Atual do Projeto (já existente)
+
+### 📊 Dashboard Administrativo
+
+Já implementado:
+
+* Dashboard geral
+* Clientes
+* Guardas
+* Escalas (Jobs)
+* Postos (Sites)
+* Vagas
+* Relatórios
+* Faturamento
+* Histórico
+* Usuários
+
+---
+
+### 🔌 APIs existentes
+
+* `/api/guards`
+* `/api/jobs`
+* `/api/sites`
+* `/api/users`
+* `/api/dashboard`
+
+---
+
+### 🧩 Componentes existentes
+
+* `LiveMap.tsx` (mapa em tempo real)
+* `GuardModal`
+* `JobModal`
+* `SiteModal`
+* `AuthProvider`
+
+---
+
+## 🏗️ EVOLUÇÃO PARA SaaS (ARQUITETURA)
+
+### 🔥 Novo conceito: Multiempresa (Multi-tenant)
+
+Cada empresa (contratante) terá:
+
+* Seus próprios seguranças
+* Suas próprias escalas
+* Seus dados isolados
+
+---
+
+## 👥 Tipos de Usuários
+
+### 🛡️ Segurança
+
+* Login (Google + email/senha)
+* Visualizar escalas disponíveis
+* Aceitar escala
+* Realizar check-in (QR Code)
+* Realizar check-out (QR Code)
+* Compartilhar localização em tempo real
+* Enviar alertas operacionais
+* Chat com contratante
+
+---
+
+### 🧑‍💼 Contratante
+
+* Criar e gerenciar escalas
+* Aprovar seguranças
+* Gerar QR Codes
+* Monitorar mapa em tempo real
+* Receber alertas
+* Controlar financeiro
+* Comunicação com equipe
+
+---
+
+## 📅 FLUXO OPERACIONAL COMPLETO
+
+### 1. Criação da Escala
+
+* Contratante cria escala (`job`)
+* Define:
+
+  * Data
+  * Horário
+  * Local
+  * Valor
+  * Quantidade de vagas
+
+---
+
+### 2. Aceite da Escala
+
+* Segurança visualiza vagas
+* Solicita participação
+* Contratante aprova
+
+---
+
+### 3. Geração de QR Codes
+
+Sistema gera automaticamente:
+
+* 🔐 QR Code de CHECK-IN
+* 🔓 QR Code de CHECK-OUT
+
+Cada QR contém:
+
+* ID da escala
+* Tipo (checkin/checkout)
+* Token de segurança
+* Expiração
+
+---
+
+### 4. Check-in (Início da Escala)
+
+* Segurança escaneia QR
+* Sistema valida:
+
+  * Usuário autorizado
+  * Escala correta
+  * Localização (opcional GPS)
+
+Resultado:
+
+* Status → ATIVO
+* Inicia rastreamento
+
+---
+
+### 5. Execução da Escala
+
+Durante a escala:
+
+#### 🗺️ Mapa em tempo real
+
+* 🟢 Ativo
+* 🟠 Solicitação
+* 🔴 SOS
+
+---
+
+#### 🚨 Ações do Segurança
+
+* 🚻 Solicitar rendição
+* 💧 Solicitar hidratação
+* 🆘 SOS emergência
+
+Todos:
+
+* Enviam localização
+* Atualizam mapa
+* Disparam alerta no dashboard
+
+---
+
+### 6. Check-out (Finalização da Escala)
+
+* Contratante apresenta QR
+* Segurança escaneia
+* Sistema:
+
+  * Finaliza escala
+  * Encerra rastreamento
+  * Registra horário final
+  * Marca como concluída
+  * Libera pagamento
+
+---
+
+## 🔐 SISTEMA DE QR CODE (SEGURO)
+
+### Estrutura:
+
+```json
+{
+  "type": "checkin",
+  "jobId": "123",
+  "token": "secure_hash",
+  "expiresAt": "timestamp"
+}
+```
+
+### Regras:
+
+* Token único por escala
+* Expiração configurável
+* Não reutilizável
+* Validado no backend
+
+---
+
+## 🗺️ RASTREAMENTO EM TEMPO REAL
+
+Base: `LiveMap.tsx`
+
+### Dados enviados:
+
+* Latitude
+* Longitude
+* Status
+* Timestamp
+
+---
+
+## 💬 CHAT OPERACIONAL
+
+* Tempo real
+* Texto + imagem
+* Canal por escala
+
+---
+
+## 💰 SISTEMA FINANCEIRO
+
+* Valor por segurança
+* Total automático por escala
+* Status:
+
+  * Pendente
+  * Concluído
+  * Pago
+
+---
+
+## 🗄️ BANCO DE DADOS (MODELO FINAL)
+
+### Users
+
+* id
+* empresa_id
+* tipo
+* nome
+* email
+
+---
+
+### Companies (NOVO)
+
+* id
+* nome
+* plano
+
+---
+
+### Jobs
+
+* id
+* empresa_id
+* site_id
+* valor
+* status
+
+---
+
+### Job_Assignments
+
+* id
+* job_id
+* guard_id
+* status
+* checkin_at
+* checkout_at
+
+---
+
+### Locations
+
+* guard_id
+* lat
+* lng
+* status
+
+---
+
+### Alerts
+
+* tipo
+* job_id
+* localização
+
+---
+
+## 🔐 AUTENTICAÇÃO
+
+* Firebase Auth
+* Google OAuth
+* Email/senha
+* Controle por tipo de usuário
+
+---
+
+## 📱 TELAS
+
+### Segurança
+
+* Login
+* Escalas
+* Scanner QR
+* Mapa
+* Ações
+* Chat
+
+---
+
+### Contratante
+
+* Dashboard
+* Escalas
+* Mapa
+* Relatórios
+* Financeiro
+
+---
+
+## 🧱 ESTRUTURA DO PROJETO
+
+```
+/app
+  /dashboard
+  /guard
+
+/components
+/services
+/api
+/lib
+/hooks
+/firebase
+```
+
+---
+
+## ⚙️ TECNOLOGIAS
+
+* Next.js
+* Firebase
+* Firestore
+* Google Maps API
+* WebSockets
+
+---
+
+## 🚀 ROADMAP
+
+### Fase 1
+
+* Multiempresa
+
+### Fase 2
+
+* Aceite de escala
+
+### Fase 3
+
+* QR Check-in
+
+### Fase 4
+
+* QR Check-out
+
+### Fase 5
+
+* Mapa em tempo real
+
+### Fase 6
+
+* Alertas
+
+### Fase 7
+
+* Chat
+
+---
+
+## 🧠 DIFERENCIAL
+
+* Monitoramento tático em tempo real
+* Sistema de emergência integrado
+* Controle total da operação
+
+---
+
+## ⚠️ REGRAS DE NEGÓCIO
+
+* Só entra no mapa após check-in
+* Check-out encerra sessão
+* SOS tem prioridade máxima
+* QR Code é único e seguro
+* Cada empresa vê apenas seus dados
+
+---
+
+## 💡 FUTURO
+
+* PIX automático
+* Avaliação de profissionais
+* IA de escala
+* Notificações push
+
+---
+
+PIX automático para o segurança após o check-out
+Avaliação de profissionais após o check-out
+IA de escala para sugerir profissionais com base na localização
+Notificações push para o contratante quando o segurança chegar no local
+Transformar em SaaS multiusuário com planos 
+Implementar fluxo operacional completo 
+QR seguro 
+Fluxo bem fechado (entrada → execução → saída)
+
+---

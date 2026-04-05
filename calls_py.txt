@@ -1,0 +1,84 @@
+==> app\layout.tsx <==
+
+==> app\page.tsx <==
+
+==> app\dashboard\layout.tsx <==
+
+==> app\dashboard\page.tsx <==
+
+==> app\dashboard\acoes\page.tsx <==
+
+==> app\dashboard\alertas\page.tsx <==
+
+==> app\dashboard\aprovacoes\page.tsx <==
+
+==> app\dashboard\chat\page.tsx <==
+
+==> app\dashboard\checkin\page.tsx <==
+
+==> app\dashboard\checkin-manual\page.tsx <==
+
+==> app\dashboard\clientes\page.tsx <==
+
+==> app\dashboard\despacho\page.tsx <==
+
+==> app\dashboard\escala\page.tsx <==
+import { subscribeToJobs, subscribeToGuards, subscribeToAssignments } from '@/lib/firestore-service';
+    unsubs.push(subscribeToJobs(companyId || '', undefined, (data) => {
+    unsubs.push(subscribeToGuards(companyId || '', (data) => {
+    unsubs.push(subscribeToAssignments({ companyId: companyId || '' }, (data) => {
+
+==> app\dashboard\faturamento\page.tsx <==
+
+==> app\dashboard\guardas\page.tsx <==
+import { subscribeToGuards, updateUser, createUser } from '@/lib/firestore-service';
+    const unsub = subscribeToGuards(companyId || '', (data) => {
+
+==> app\dashboard\historico\page.tsx <==
+
+==> app\dashboard\mapa\page.tsx <==
+
+==> app\dashboard\perfil\page.tsx <==
+
+==> app\dashboard\postos\page.tsx <==
+import { subscribeToSites, createSite, updateSite, deleteSite } from '@/lib/firestore-service';
+    const unsub = subscribeToSites(companyId || '', (data) => {
+
+==> app\dashboard\qrcodes\page.tsx <==
+
+==> app\dashboard\relatorios\page.tsx <==
+
+==> app\dashboard\usuarios\page.tsx <==
+import { subscribeToUsers } from '@/lib/firestore-service';
+    const unsub = subscribeToUsers(companyId || '', (data) => {
+
+==> app\dashboard\vagas\page.tsx <==
+
+==> components\auth-provider.tsx <==
+
+==> components\Chat.tsx <==
+import { sendMessage, subscribeToMessages, uploadFile } from '@/lib/firestore-service';
+    const unsub = subscribeToMessages(jobId, (msgs) => {
+
+==> components\GuardActions.tsx <==
+
+==> components\GuardModal.tsx <==
+
+==> components\Header.tsx <==
+
+==> components\JobModal.tsx <==
+
+==> components\language-provider.tsx <==
+
+==> components\LiveMap.tsx <==
+
+==> components\QRGenerator.tsx <==
+
+==> components\QRScanner.tsx <==
+
+==> components\Sidebar.tsx <==
+
+==> components\SiteModal.tsx <==
+
+==> components\sw-register.tsx <==
+

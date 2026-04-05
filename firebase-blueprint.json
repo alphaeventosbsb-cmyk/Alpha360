@@ -1,0 +1,119 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the Alphaguard app",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "client", "guard", "user"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    },
+    "Guard": {
+      "title": "Guard",
+      "description": "Security guard profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "rank": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "type": "number" },
+        "cpf": { "type": "string" },
+        "rg": { "type": "string" },
+        "address": { "type": "string" },
+        "cep": { "type": "string" },
+        "height": { "type": "number" },
+        "weight": { "type": "number" },
+        "photoUrl": { "type": "string" },
+        "rgFrontUrl": { "type": "string" },
+        "rgBackUrl": { "type": "string" },
+        "cpfUrl": { "type": "string" },
+        "residenceProofUrl": { "type": "string" },
+        "courseUrl": { "type": "string" },
+        "recyclingUrl": { "type": "string" },
+        "status": { "type": "string" },
+        "performance": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Site": {
+      "title": "Site",
+      "description": "Operating site/location",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "client": { "type": "string" },
+        "guards_count": { "type": "number" },
+        "status": { "type": "string" },
+        "last_audit": { "type": "string" },
+        "image": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Job": {
+      "title": "Job",
+      "description": "Available jobs/vagas",
+      "type": "object",
+      "properties": {
+        "contractorId": { "type": "string" },
+        "guardId": { "type": "string" },
+        "client_name": { "type": "string" },
+        "date": { "type": "string" },
+        "start_time": { "type": "string" },
+        "end_time": { "type": "string" },
+        "daily_rate": { "type": "number" },
+        "guards_count": { "type": "number" },
+        "location": { "type": "string" },
+        "mapLink": { "type": "string" },
+        "has_qrf": { "type": "boolean" },
+        "has_hydration": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["open", "filled", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Dashboard alerts",
+      "type": "object",
+      "properties": {
+        "time": { "type": "string" },
+        "guard": { "type": "string" },
+        "initials": { "type": "string" },
+        "location": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string" },
+        "type_color": { "type": "string" },
+        "status_color": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/guards/{guardId}": {
+      "schema": "Guard",
+      "description": "Security guards"
+    },
+    "/sites/{siteId}": {
+      "schema": "Site",
+      "description": "Operating sites"
+    },
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Available jobs"
+    },
+    "/alerts/{alertId}": {
+      "schema": "Alert",
+      "description": "System alerts"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Alphaguard segurança privada",
+  "description": "App de segurança privada com login via Google e Email/Senha",
+  "requestFramePermissions": ["geolocation"]
+}

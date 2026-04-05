@@ -1,0 +1,56 @@
+﻿   Ôû▓ Next.js 15.5.14
+
+   Creating an optimized production build ...
+ Ô£ô Compiled successfully in 5.9s
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/29) ...
+   Generating static pages (7/29) 
+   Generating static pages (14/29) 
+   Generating static pages (21/29) 
+ Ô£ô Generating static pages (29/29)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+Ôöî Ôùï /                                    3.89 kB         267 kB
+Ôö£ Ôùï /_not-found                             1 kB         103 kB
+Ôö£ ãÆ /api/dashboard                         156 B         102 kB
+Ôö£ ãÆ /api/guards                            156 B         102 kB
+Ôö£ ãÆ /api/guards/[id]                       156 B         102 kB
+Ôö£ ãÆ /api/guards/register                   156 B         102 kB
+Ôö£ ãÆ /api/jobs                              156 B         102 kB
+Ôö£ ãÆ /api/jobs/[id]                         156 B         102 kB
+Ôö£ ãÆ /api/sites                             156 B         102 kB
+Ôö£ ãÆ /api/sites/[id]                        156 B         102 kB
+Ôö£ ãÆ /api/users                             156 B         102 kB
+Ôö£ ãÆ /api/users/[id]                        156 B         102 kB
+Ôö£ Ôùï /dashboard                            112 kB         390 kB
+Ôö£ Ôùï /dashboard/acoes                     5.44 kB         271 kB
+Ôö£ Ôùï /dashboard/alertas                   4.66 kB         271 kB
+Ôö£ Ôùï /dashboard/aprovacoes                4.24 kB         270 kB
+Ôö£ Ôùï /dashboard/chat                      3.64 kB         278 kB
+Ôö£ Ôùï /dashboard/checkin                    112 kB         378 kB
+Ôö£ Ôùï /dashboard/clientes                  3.69 kB         278 kB
+Ôö£ Ôùï /dashboard/despacho                  5.06 kB         107 kB
+Ôö£ Ôùï /dashboard/escala                    4.07 kB         292 kB
+Ôö£ Ôùï /dashboard/faturamento               3.14 kB         229 kB
+Ôö£ Ôùï /dashboard/guardas                   7.91 kB         282 kB
+Ôö£ Ôùï /dashboard/historico                 4.34 kB         227 kB
+Ôö£ Ôùï /dashboard/mapa                      4.41 kB         227 kB
+Ôö£ Ôùï /dashboard/perfil                    3.68 kB         229 kB
+Ôö£ Ôùï /dashboard/postos                    7.38 kB         276 kB
+Ôö£ Ôùï /dashboard/qrcodes                   10.4 kB         273 kB
+Ôö£ Ôùï /dashboard/relatorios                5.72 kB         108 kB
+Ôö£ Ôùï /dashboard/usuarios                  6.48 kB         232 kB
+Ôöö Ôùï /dashboard/vagas                      3.2 kB         269 kB
++ First Load JS shared by all             102 kB
+  Ôö£ chunks/1255-aab1fab69a431920.js      45.5 kB
+  Ôö£ chunks/4bd1b696-182b6b13bdad92e3.js  54.2 kB
+  Ôöö other shared chunks (total)          2.53 kB
+
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+
