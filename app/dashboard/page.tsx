@@ -31,7 +31,7 @@ const LiveMap = dynamic(() => import('@/components/LiveMap'), {
 // SOS Alarm Hook
 function useSOSAlarm() {
   const audioContextRef = useRef<AudioContext | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const startAlarm = useCallback(() => {
@@ -517,24 +517,26 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: 'Guardas em Serviço', value: `${guardsOnDuty}/${totalGuards}`, icon: Users, color: 'text-green-600', bg: 'bg-green-50', trend: guardsOnDuty > 0 ? `${guardsOnDuty} ativos agora` : 'Nenhum ativo' },
-          { label: 'Escalas Abertas', value: openJobs, icon: Briefcase, color: 'text-blue-600', bg: 'bg-blue-50', trend: `${openJobs} aguardando` },
-          { label: 'Aprovações', value: pendingApprovals, icon: CheckCircle2, color: 'text-amber-600', bg: 'bg-amber-50', trend: `${pendingApprovals} pendentes`, pulse: pendingApprovals > 0 },
-          { label: 'Alertas Ativos', value: activeAlerts, icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50', trend: activeAlerts > 0 ? `${activeAlerts} requerem ação` : 'Tudo limpo', pulse: activeAlerts > 0 },
-          { label: 'Receita Total', value: `R$ ${totalRevenue.toLocaleString('pt-BR')}`, icon: DollarSign, color: 'text-purple-600', bg: 'bg-purple-50', trend: `${completedJobs} escalas concluídas` },
+          { label: 'Guardas em Serviço', value: `${guardsOnDuty}/${totalGuards}`, icon: Users, color: 'text-green-600', bg: 'bg-green-50', trend: guardsOnDuty > 0 ? `${guardsOnDuty} ativos agora` : 'Nenhum ativo', href: '/dashboard/guardas' },
+          { label: 'Escalas Abertas', value: openJobs, icon: Briefcase, color: 'text-blue-600', bg: 'bg-blue-50', trend: `${openJobs} aguardando`, href: '/dashboard/escala' },
+          { label: 'Aprovações', value: pendingApprovals, icon: CheckCircle2, color: 'text-amber-600', bg: 'bg-amber-50', trend: `${pendingApprovals} pendentes`, pulse: pendingApprovals > 0, href: '/dashboard/aprovacoes' },
+          { label: 'Alertas Ativos', value: activeAlerts, icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50', trend: activeAlerts > 0 ? `${activeAlerts} requerem ação` : 'Tudo limpo', pulse: activeAlerts > 0, href: '/dashboard/alertas' },
+          { label: 'Receita Total', value: `R$ ${totalRevenue.toLocaleString('pt-BR')}`, icon: DollarSign, color: 'text-purple-600', bg: 'bg-purple-50', trend: `${completedJobs} escalas concluídas`, href: '/dashboard/faturamento' },
         ].map((stat, i) => (
-          <motion.div key={i} whileHover={{ y: -4 }} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500">{stat.label}</p>
-                <h3 className="text-2xl font-bold mt-1 text-slate-900">{stat.value}</h3>
+          <Link href={stat.href} key={i}>
+            <motion.div whileHover={{ y: -4 }} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer h-full hover:border-[#192c4d] transition-colors">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500">{stat.label}</p>
+                  <h3 className="text-2xl font-bold mt-1 text-slate-900">{stat.value}</h3>
+                </div>
+                <div className={`p-2 ${stat.bg} ${stat.color} rounded-lg ${stat.pulse ? 'animate-pulse' : ''}`}>
+                  <stat.icon className="size-5" />
+                </div>
               </div>
-              <div className={`p-2 ${stat.bg} ${stat.color} rounded-lg ${stat.pulse ? 'animate-pulse' : ''}`}>
-                <stat.icon className="size-5" />
-              </div>
-            </div>
-            <p className={`mt-2 text-[10px] font-medium ${stat.color}`}>{stat.trend}</p>
-          </motion.div>
+              <p className={`mt-2 text-[10px] font-medium ${stat.color}`}>{stat.trend}</p>
+            </motion.div>
+          </Link>
         ))}
       </div>
 
