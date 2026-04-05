@@ -63,7 +63,9 @@ export default function QrScreen() {
       // Puxar localização (ignorando erros se GPS estiver ruim)
       let lat = 0, lng = 0;
       try {
-         const loc = await Location.getCurrentPositionAsync({});
+         const loc = await Location.getCurrentPositionAsync({
+           accuracy: Location.Accuracy.Highest,
+         });
          lat = loc.coords.latitude;
          lng = loc.coords.longitude;
       } catch (e) {

@@ -77,7 +77,9 @@ export default function PontoScreen() {
       let lat = 0;
       let lng = 0;
       try {
-        let location = await Location.getCurrentPositionAsync({});
+        let location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Highest,
+        });
         lat = location.coords.latitude;
         lng = location.coords.longitude;
       } catch (e) {
