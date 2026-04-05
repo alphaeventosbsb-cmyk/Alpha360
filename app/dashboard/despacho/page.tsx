@@ -29,7 +29,7 @@ function useSOSAlarm() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainRef = useRef<GainNode | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const startAlarm = useCallback(() => {
