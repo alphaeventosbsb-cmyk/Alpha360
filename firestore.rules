@@ -50,7 +50,7 @@ service cloud.firestore {
     // Jobs (Escalas)
     // ===============================================================
     match /jobs/{jobId} {
-      allow read: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
+      allow read: if isAuthenticated();
       allow create: if isAuthenticated() && belongsToSameCompany(request.resource.data.companyId);
       allow update: if isAuthenticated() && (isAdmin() || belongsToSameCompany(resource.data.companyId));
       allow delete: if isAdmin() || (isAuthenticated() && belongsToSameCompany(resource.data.companyId));

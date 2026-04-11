@@ -442,3 +442,249 @@ QR seguro
 Fluxo bem fechado (entrada → execução → saída)
 
 ---
+================================================================================================
+siga esses passos 
+# 🚀 REFACTOR ALPHA360 — ARQUITETURA PROFISSIONAL (MONOREPO + API + MULTI-TENANT)
+
+## 🎯 OBJETIVO
+
+Refatorar o projeto atual Alpha360 (monolítico) para uma arquitetura escalável com:
+
+* Separação entre Dashboard, PWA e API
+* Suporte a multi-empresas (multi-tenant)
+* Backend centralizado
+* Remoção de código duplicado
+* Organização em monorepo
+
+---
+
+# 🧱 NOVA ESTRUTURA (OBRIGATÓRIA)
+
+Criar estrutura:
+
+/alpha360
+/apps
+/dashboard   → Next.js (SEM PWA)
+/pwa         → Vite + React (COM PWA)
+/api         → Node + Express (backend)
+/packages
+/shared      → types e utils compartilhados
+
+---
+
+# ❗ REGRA CRÍTICA
+
+REMOVER qualquer acesso direto ao Firestore no frontend.
+
+Substituir por:
+
+Dashboard → API → Firestore
+PWA → API → Firestore
+
+---
+
+# 🧠 MULTI-TENANT (OBRIGATÓRIO)
+
+Todos os dados devem conter:
+
+companyId: string
+
+---
+
+# 🔐 AUTENTICAÇÃO
+
+Usar Firebase Auth, porém:
+
+* O frontend envia o token JWT
+* A API valida o token
+* A API injeta o usuário na request
+
+Criar middleware:
+
+authMiddleware:
+
+* validar Bearer token
+* extrair uid
+* buscar user no Firestore
+* adicionar no req.user:
+
+  * uid
+  * companyId
+  * role
+
+---
+
+# 🧱 API (apps/api)
+
+Criar backend com:
+
+* Express
+* firebase-admin
+* CORS habilitado
+
+---
+
+## Estrutura:
+
+src/
+controllers/
+services/
+routes/
+middlewares/
+lib/firebase-admin.ts
+utils/response.ts
+server.ts
+
+---
+
+## Rotas iniciais:
+
+/api/auth/me
+/api/jobs
+/api/users
+/api/guards
+
+---
+
+## Regras:
+
+* TODAS rotas protegidas com authMiddleware
+* SEMPRE filtrar por companyId
+* NUNCA retornar dados de outra empresa
+
+---
+
+## Padrão de resposta:
+
+{
+success: true,
+data: {},
+error: null
+}
+
+---
+
+# 🌐 DASHBOARD (apps/dashboard)
+
+* Manter Next.js
+* REMOVER:
+
+  * service worker
+  * manifest
+  * qualquer PWA
+
+---
+
+## Alterações obrigatórias:
+
+* Substituir Firebase por chamadas HTTP
+* Criar /services/api.ts
+* Todas ações devem chamar a API
+
+---
+
+# 📱 PWA (apps/pwa)
+
+Criar com:
+
+* Vite + React
+* vite-plugin-pwa
+
+---
+
+## Funcionalidades:
+
+* Login
+* Ver escala
+* Check-in
+* Chat
+* Ações (SOS)
+
+---
+
+## ⚠️ CONFIGURAÇÃO CRÍTICA (CACHE)
+
+NÃO CACHEAR API:
+
+runtimeCaching:
+
+* urlPattern: //api//
+  handler: NetworkOnly
+
+---
+
+# 📦 SHARED (packages/shared)
+
+Mover:
+
+* types.ts
+* interfaces
+* utils comuns
+
+---
+
+## IMPORTANTE
+
+NÃO duplicar código
+Usar import:
+
+@alpha360/shared
+
+---
+
+# 🔄 REALTIME
+
+Usar Firestore realtime APENAS para:
+
+* Chat
+* Localização
+
+---
+
+# ❌ REMOVER DO PROJETO
+
+* Código duplicado
+* Hooks não usados
+* Firebase direto em páginas
+* Arquivos antigos de PWA no dashboard
+
+---
+
+# 🚀 MIGRAÇÃO (PASSO A PASSO)
+
+1. Criar estrutura de pastas
+2. Criar API base
+3. Mover lógica de negócio para API
+4. Substituir chamadas Firebase no dashboard → API
+5. Criar PWA separado
+6. Testar fluxo completo
+7. Remover código antigo
+
+---
+
+# 🧪 TESTES
+
+* Login funcionando
+* Criar escala
+* Listar dados por empresa
+* Check-in funcionando
+* Nenhum dado cruzando empresas
+
+---
+
+# ⚠️ RESTRIÇÕES
+
+* NÃO alterar design atual
+* NÃO quebrar funcionalidades existentes
+* Focar apenas em arquitetura e backend
+
+---
+
+# 🎯 RESULTADO ESPERADO
+
+* Monorepo organizado
+* API centralizada
+* Multi-tenant funcionando
+* Dashboard separado
+* PWA separado
+* Código limpo e sem duplicação

@@ -1,20 +1,51 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🛡️ Alpha360 — Monorepo
 
-# Run and deploy your AI Studio app
+Plataforma SaaS de gestão de segurança operacional.
 
-This contains everything you need to run your app locally.
+## 📁 Estrutura
 
-View your app in AI Studio: https://ai.studio/apps/11e343e6-c812-4b18-8b14-cf65a2ccb828
+```
+/alpha360
+├── /apps
+│   ├── /dashboard    → Next.js (painel do contratante)
+│   ├── /api          → Express (backend centralizado)
+│   └── /pwa          → Vite + React (app do vigilante)
+├── /packages
+│   └── /shared       → Tipos e utils compartilhados
+├── package.json      → Monorepo (npm workspaces)
+└── turbo.json        → Turborepo config
+```
 
-## Run Locally
+## 🚀 Como rodar
 
-**Prerequisites:**  Node.js
+```bash
+# Instalar dependências (raiz)
+npm install
 
+# Dashboard (Next.js — porta 3000)
+npm run dev
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+# API backend (Express — porta 3001)
+npm run dev:api
+
+# PWA do vigilante (Vite — porta 5173)
+npm run dev:pwa
+```
+
+## 🏗️ Build
+
+```bash
+npm run build        # Dashboard
+npm run build:api    # API
+npm run build:pwa    # PWA
+```
+
+## 🔐 Segurança
+
+- **Frontend → API → Firestore** (zero acesso direto)
+- JWT via Firebase Auth validado no middleware
+- Multi-tenant: todos dados filtrados por `companyId`
+
+## 📄 Licença
+
+© 2026 Alpha360 — Todos os direitos reservados.

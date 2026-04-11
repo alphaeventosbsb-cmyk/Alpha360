@@ -5,6 +5,7 @@ coverage/
 *.log
 .env*
 !.env.example
+serviceAccountKey.json
 
 .vercel
 .env*.local
