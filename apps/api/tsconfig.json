@@ -9,12 +9,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@alpha360/shared": ["../../packages/shared/src"]
-    }
+    "baseUrl": "."
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
